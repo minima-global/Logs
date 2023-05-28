@@ -22,7 +22,7 @@ function Home() {
             ref={textarea}
             value={logs || ''}
             readOnly
-            className="textarea p-3 w-full h-full outline-none"
+            className="textarea custom-scrollbar p-3 w-full h-full outline-none"
             autoCorrect="none"
           />
         </div>
