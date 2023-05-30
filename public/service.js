@@ -7,15 +7,12 @@ MDS.init(function (msg) {
     MDS.sql(`INSERT INTO logs (message) VALUES ('${msg.data.message.replace(/'/g, "'")}')`, function () {
       // delete everything but the latest 500 logs if there is more than 500
       MDS.sql('SELECT COUNT(*) FROM logs', function (response) {
-        var count = Number(response.rows[0]['COUNT(*)']);
+        if (response.rows.length > 0) {
+          var count = Number(response.rows[0]['COUNT(*)']);
 
-        if (count > 500) {
-          MDS.sql(
-            'DELETE FROM logs WHERE id NOT IN (SELECT id FROM logs ORDER BY id DESC LIMIT 500)',
-            function (response) {
-              console.log(response);
-            }
-          );
+          if (count > 500) {
+            MDS.sql('DELETE FROM logs WHERE id NOT IN (SELECT id FROM logs ORDER BY id DESC LIMIT 500)');
+          }
         }
       });
     });

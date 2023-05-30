@@ -2,7 +2,7 @@ import { useContext, useState } from 'react';
 import { appContext } from '../../AppContext';
 
 function TitleBar() {
-  const { logs } = useContext(appContext);
+  const { logs, emptyLogs } = useContext(appContext);
   const [showMenu, setShowMenu] = useState(false);
 
   const exportLogs = () => {
@@ -48,7 +48,8 @@ function TitleBar() {
         </svg>
         <div className={`absolute top-12 z-30 transition-all origin-top-right ${showMenu ? 'scale-100' : 'scale-0'}`}>
           <div className="relative flex flex-col gap-4 pt-4 px-5 pb-5 text-core-grey-5 bg-grey shadow-xl min-w-[170px]">
-            <div className="cursor-pointer" onClick={exportLogs}>Export</div>
+            {!emptyLogs && <div className="cursor-pointer" onClick={exportLogs}>Export</div>}
+            {emptyLogs &&  <div className="cursor-not-allowed opacity-60">Export</div>}
           </div>
         </div>
         {showMenu && (
