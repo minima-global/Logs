@@ -1,14 +1,11 @@
 import { useTransition, animated } from '@react-spring/web';
 import { modalAnimation } from '../../animations';
-import { useState } from 'react';
 
 export function ConfirmModal({ display, message, close }) {
   const transition: any = useTransition(display, modalAnimation as any);
-  const [showConfirm, setShowConfirm] = useState(false);
 
   return (
     <div>
-
       {transition((style, display) => (
         <>
           {display && (
