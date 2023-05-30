@@ -1,5 +1,4 @@
 import { useContext, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { appContext } from '../../AppContext';
 
 function TitleBar() {
@@ -21,7 +20,7 @@ function TitleBar() {
       anchor.setAttribute("href", url);
       anchor.setAttribute("download", `minima_${date.split('-').join('_')}_${time.split('-').join('_')}.txt`);
       document.body.appendChild(anchor);
-      document.getElementById('download').click();
+      document.getElementById('download')!.click();
       (window as any).URL.revokeObjectURL(url);
       anchor.remove();
     }
