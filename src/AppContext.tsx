@@ -19,7 +19,7 @@ const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
         if (evt.event === 'inited' || evt.event === 'MINIMALOG') {
           getLogs().then((logs) => {
             setLogs(logs.map((i) => i.MESSAGE).join('\n'));
-          })
+          });
         }
       });
     }

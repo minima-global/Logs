@@ -1,7 +1,23 @@
 MDS.init(function (msg) {
   if (msg.event === 'inited') {
-    MDS.sql("CREATE TABLE IF NOT EXISTS logs (id bigint auto_increment,message varchar(2048) NOT NULL)");
+    // create schema
+    MDS.sql('CREATE TABLE IF NOT EXISTS logs (id bigint auto_increment,message varchar(2048) NOT NULL)');
   } else if (msg.event === 'MINIMALOG') {
-    MDS.sql(`INSERT INTO logs (message) VALUES ('${msg.data.message.replace(/'/g, "\'")}')`);
+    // insert logs into the logs table
+    MDS.sql(`INSERT INTO logs (message) VALUES ('${msg.data.message.replace(/'/g, "'")}')`, function () {
+      // delete everything but the latest 500 logs if there is more than 500
+      MDS.sql('SELECT COUNT(*) FROM logs', function (response) {
+        var count = Number(response.rows[0]['COUNT(*)']);
+
+        if (count > 500) {
+          MDS.sql(
+            'DELETE FROM logs WHERE id NOT IN (SELECT id FROM logs ORDER BY id DESC LIMIT 500)',
+            function (response) {
+              console.log(response);
+            }
+          );
+        }
+      });
+    });
   }
 });
