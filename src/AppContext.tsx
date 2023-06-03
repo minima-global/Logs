@@ -26,7 +26,7 @@ const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
               setEmptyLogs(true);
             }
 
-            setLogs(logs.map((i) => i.MESSAGE).join('\n'));
+            setLogs(logs.map((i) => i.MESSAGE.replace(/]\s:\s/, ']\n')).join('\n'));
           });
         }
       });
