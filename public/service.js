@@ -4,7 +4,7 @@ MDS.init(function (msg) {
     MDS.sql('CREATE TABLE IF NOT EXISTS logs (id bigint auto_increment,message varchar(2048) NOT NULL)');
   } else if (msg.event === 'MINIMALOG') {
     // insert logs into the logs table
-    MDS.sql(`INSERT INTO logs (message) VALUES ('${msg.data.message.replace(/'/g, "'")}')`, function () {
+    MDS.sql(`INSERT INTO logs (message) VALUES ('${msg.data.message.replace(/'/g, "\'")}')`, function () {
       // delete everything but the latest 500 logs if there is more than 500
       MDS.sql('SELECT COUNT(*) FROM logs', function (response) {
         if (response.rows.length > 0) {

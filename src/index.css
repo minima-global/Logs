@@ -26,39 +26,29 @@
     --globalnav-backdrop-filter-level-two: saturate(180%) blur(20px);
 }
 
+/* Core */
 html {
+    height: 100%;
     scroll-behavior: smooth;
     background-color: var(--core-black-100);
     -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 }
-
 body {
     color: #E9E9EB;
     height: 100%;
-    min-height: -webkit-fill-available;
     font-weight: 500;
     letter-spacing: 0.3px;
     font-family: 'Manrope', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: var(--background-color);
-    background-size: cover;
-    background-repeat: no-repeat;
 }
-
 #root {
     height: 100%;
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
+    min-height: 100%;
 }
-
 .app {
     width: 100%;
     height: 100%;
-}
-
-.title-bar {
-    background-color: var(--title-bar-color);
 }
 
 /** Backgrounds **/
@@ -81,7 +71,7 @@ body {
     background-color: var(--core-black-contrast-3);
 }
 
-/** Text Colours **/
+/** Text **/
 .text-core-grey-100 {
     color: var(--core-grey-100);
 }
@@ -95,7 +85,7 @@ body {
     color: var(--core-grey-20);
 }
 .text-core-grey-5 {
-    color: var(--core-grey-05);
+    color: var(--core-grey-5);
 }
 
 .textarea {
