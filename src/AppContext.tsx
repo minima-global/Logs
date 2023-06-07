@@ -26,7 +26,10 @@ const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
               setEmptyLogs(true);
             }
 
-            setLogs(logs.map((i) => i.MESSAGE.replace(/]\s:\s/, ']\n')).join('\n'));
+            setLogs(logs.map((i) => {
+              const decoded = decodeURIComponent(i.MESSAGE).replace("%27", "'");
+              return decoded.replace(/]\s:\s/, ']\n')
+            }).join('\n'));
           });
         }
       });

@@ -3,25 +3,35 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { appContext } from '../../AppContext';
 import Modal from '../../components/UI/Modal';
 import Button from '../../components/UI/Button';
+import { toHex } from '../../utilities/utilities';
 
 function Home() {
   const { logs } = useContext(appContext);
   const textarea = useRef<HTMLTextAreaElement | null>(null);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [hideTop, setHideTop] = useState(false);
 
   const exportLogs = () => {
     if (logs) {
-      setShowDownloadModal(false);
-      const anchor = document.createElement('a');
-      const url = (window as any).URL.createObjectURL(new Blob([logs], { type: 'plain/text' }));
       const dateString = new Date().toISOString();
       const timeString = new Date().toTimeString();
       const date = dateString.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}/g)![0];
       const time = timeString.match(/[0-9]{2}:[0-9]{2}:[0-9]{2}/g)![0];
+      const fileName = `minima_${date.split('-').join('_')}_${time.split('-').join('_')}.txt`;
+      const blob = new Blob([logs]);
+      const url = (window as any).URL.createObjectURL(blob, { type: 'plain/text' });
+
+      if (window.navigator.userAgent.includes("Minima Browser")) {
+        // @ts-ignore
+        return Android.blobDownload(fileName.replace(/:/g, '_'), toHex(logs));
+      }
+
+      setShowDownloadModal(false);
+      const anchor = document.createElement('a');
       anchor.style.display = 'none';
       anchor.id = 'download';
       anchor.setAttribute('href', url);
-      anchor.setAttribute('download', `minima_${date.split('-').join('_')}_${time.split('-').join('_')}.txt`);
+      anchor.setAttribute('download', fileName);
       document.body.appendChild(anchor);
       document.getElementById('download')!.click();
       (window as any).URL.revokeObjectURL(url);
@@ -36,6 +46,28 @@ function Home() {
   useEffect(() => {
     if (textarea && textarea.current) {
       textarea.current!.scrollTop = textarea.current!.scrollHeight;
+    }
+  }, [logs, textarea]);
+
+  // shows hide the top section if the user is not scrolled at the bottom of the textarea
+  // offset: 200 pixels
+  useEffect(() => {
+    if (textarea && textarea.current) {
+      const offset = 200;
+
+      const onScroll = () => {
+        if (textarea.current!.scrollHeight > textarea.current!.scrollTop + textarea.current!.clientHeight + offset) {
+          setHideTop(true);
+        } else {
+          setHideTop(false);
+        }
+      };
+
+      textarea.current!.addEventListener('scroll', onScroll);
+
+      return () => {
+        textarea.current!.removeEventListener('scroll', onScroll);
+      };
     }
   }, [logs, textarea]);
 
@@ -65,8 +97,7 @@ function Home() {
               />
             </svg>
             <p className="mb-12">
-              Lorem ipsum dolor sit amet consectetur. Eget dictumst sodales eget ipsum mauris enim malesuada tempus
-              maecenas.
+              This will download the logs as a text file.
             </p>
             <Button variant="primary" onClick={exportLogs}>
               Download logs
@@ -76,7 +107,11 @@ function Home() {
       </Modal>
       <div className="h-screen flex flex-col flex-grow">
         <TitleBar />
-        <div className="p-5 bg-core-black-contrast flex flex-col gap-6">
+        <div
+          className={`bg-core-black-contrast flex flex-col gap-6 transition-all duration-150 ease-in-out ${
+            !hideTop ? 'opacity-100 visible scaleY-1 h-fit pt-4 px-5 pb-5 mb-1' : 'h-0 p-0 opacity-0 scaleY-0 -translate-y-24'
+          }`}
+        >
           <div>
             <div className="grid grid-cols-12">
               <div className="col-span-4">
@@ -106,7 +141,7 @@ function Home() {
             </div>
           </div>
         </div>
-        <div className="p-2 flex flex-grow text-sm w-full">
+        <div className={`flex flex-grow text-sm w-full ${hideTop ? 'px-2 pb-2' : 'p-2'}`}>
           <textarea
             readOnly
             ref={textarea}
