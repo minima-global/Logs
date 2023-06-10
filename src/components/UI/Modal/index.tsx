@@ -28,13 +28,22 @@ export const Modal: React.FC<PropsWithChildren<ModalProps>> = ({ frosted = false
               <div className="relative z-50 w-full max-w-md px-5">
                 <animated.div
                   style={style}
-                  className="modal mb-8 text-white bg-core-black-contrast-2 box-shadow-lg rounded p-8 mx-auto relative overflow-hidden"
+                  className="modal mb-16 text-white bg-core-black-contrast-2 box-shadow-lg rounded p-8 mx-auto relative overflow-hidden"
                 >
-                  {children}
+                  <>
+                    {children}
+                    {close && (
+                      <div className="hidden lg:block w-full z-50 mt-4">
+                        <Button variant="secondary" onClick={close.callback}>
+                          {close.textContent || 'Close'}
+                        </Button>
+                      </div>
+                    )}
+                  </>
                 </animated.div>
               </div>
               {close && (
-                <div className="absolute bottom-10 w-full px-6 z-50">
+                <div className="block lg:hidden absolute bottom-10 w-full px-6 z-50">
                   <Button variant="secondary" onClick={close.callback}>
                     {close.textContent || 'Close'}
                   </Button>

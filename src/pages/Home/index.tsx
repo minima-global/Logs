@@ -6,7 +6,7 @@ import Button from '../../components/UI/Button';
 import { toHex } from '../../utilities/utilities';
 
 function Home() {
-  const { logs } = useContext(appContext);
+  const { logs, hasLogs } = useContext(appContext);
   const textarea = useRef<HTMLTextAreaElement | null>(null);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [hideTop, setHideTop] = useState(false);
@@ -21,7 +21,7 @@ function Home() {
       const blob = new Blob([logs]);
       const url = (window as any).URL.createObjectURL(blob, { type: 'plain/text' });
 
-      if (window.navigator.userAgent.includes("Minima Browser")) {
+      if (window.navigator.userAgent.includes('Minima Browser')) {
         // @ts-ignore
         return Android.blobDownload(fileName.replace(/:/g, '_'), toHex(logs));
       }
@@ -96,20 +96,42 @@ function Home() {
                 fill="#F4F4F5"
               />
             </svg>
-            <p className="mb-12">
-              This will download the logs as a text file.
-            </p>
+            <p className="mb-12">This will download the logs as a text file.</p>
             <Button variant="primary" onClick={exportLogs}>
               Download logs
             </Button>
           </div>
         </div>
       </Modal>
-      <div className="h-screen flex flex-col flex-grow">
-        <TitleBar />
+      <div className="h-screen flex flex-col flex-grow bg-core-black-contrast">
+        <TitleBar>
+          {hasLogs && (
+            <div
+              onClick={displayDownloadModal}
+              className="hidden lg:flex cursor-pointer items-center justify-end gap-3"
+            >
+              Download
+              <svg
+                className="-mt-0.5"
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M2.3077 16C1.80257 16 1.375 15.825 1.025 15.475C0.675 15.125 0.5 14.6974 0.5 14.1923V11.5H1.99997V14.1923C1.99997 14.2692 2.03202 14.3397 2.09612 14.4039C2.16024 14.468 2.23077 14.5 2.3077 14.5H13.6922C13.7692 14.5 13.8397 14.468 13.9038 14.4039C13.9679 14.3397 14 14.2692 14 14.1923V11.5H15.5V14.1923C15.5 14.6974 15.325 15.125 14.975 15.475C14.625 15.825 14.1974 16 13.6922 16H2.3077ZM7.99997 12.1154L3.7308 7.84619L4.78462 6.76162L7.25 9.22699V0.826965H8.74995V9.22699L11.2153 6.76162L12.2692 7.84619L7.99997 12.1154Z"
+                  fill="#F4F4F5"
+                />
+              </svg>
+            </div>
+          )}
+        </TitleBar>
         <div
-          className={`bg-core-black-contrast flex flex-col gap-6 transition-all duration-150 ease-in-out ${
-            !hideTop ? 'opacity-100 visible scaleY-1 h-fit pt-4 px-5 pb-5 mb-1' : 'h-0 p-0 opacity-0 scaleY-0 -translate-y-24'
+          className={`flex flex-col gap-6 transition-all duration-150 ease-in-out max-w-xl w-full mx-auto ${
+            !hideTop
+              ? 'opacity-100 visible scaleY-1 h-fit pt-4 px-5 lg:px-0 pb-5 mb-1'
+              : 'h-0 p-0 opacity-0 scaleY-0 -translate-y-24'
           }`}
         >
           <div>
@@ -118,22 +140,27 @@ function Home() {
                 <h1 className="text-2xl">Logs</h1>
               </div>
               <div className="col-span-8 flex items-center justify-end mb-0.5">
-                <div onClick={displayDownloadModal} className="cursor-pointer flex items-center justify-end gap-3">
-                  Download
-                  <svg
-                    className="-mt-0.5"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+                {hasLogs && (
+                  <div
+                    onClick={displayDownloadModal}
+                    className="flex lg:hidden cursor-pointer items-center justify-end gap-3"
                   >
-                    <path
-                      d="M2.3077 16C1.80257 16 1.375 15.825 1.025 15.475C0.675 15.125 0.5 14.6974 0.5 14.1923V11.5H1.99997V14.1923C1.99997 14.2692 2.03202 14.3397 2.09612 14.4039C2.16024 14.468 2.23077 14.5 2.3077 14.5H13.6922C13.7692 14.5 13.8397 14.468 13.9038 14.4039C13.9679 14.3397 14 14.2692 14 14.1923V11.5H15.5V14.1923C15.5 14.6974 15.325 15.125 14.975 15.475C14.625 15.825 14.1974 16 13.6922 16H2.3077ZM7.99997 12.1154L3.7308 7.84619L4.78462 6.76162L7.25 9.22699V0.826965H8.74995V9.22699L11.2153 6.76162L12.2692 7.84619L7.99997 12.1154Z"
-                      fill="#F4F4F5"
-                    />
-                  </svg>
-                </div>
+                    Download
+                    <svg
+                      className="-mt-0.5"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M2.3077 16C1.80257 16 1.375 15.825 1.025 15.475C0.675 15.125 0.5 14.6974 0.5 14.1923V11.5H1.99997V14.1923C1.99997 14.2692 2.03202 14.3397 2.09612 14.4039C2.16024 14.468 2.23077 14.5 2.3077 14.5H13.6922C13.7692 14.5 13.8397 14.468 13.9038 14.4039C13.9679 14.3397 14 14.2692 14 14.1923V11.5H15.5V14.1923C15.5 14.6974 15.325 15.125 14.975 15.475C14.625 15.825 14.1974 16 13.6922 16H2.3077ZM7.99997 12.1154L3.7308 7.84619L4.78462 6.76162L7.25 9.22699V0.826965H8.74995V9.22699L11.2153 6.76162L12.2692 7.84619L7.99997 12.1154Z"
+                        fill="#F4F4F5"
+                      />
+                    </svg>
+                  </div>
+                )}
               </div>
               <div className="col-span-12 mt-3">
                 <p className="text-core-grey-100 text-sm">Logs are a record of your node's activity and processes.</p>
@@ -141,14 +168,16 @@ function Home() {
             </div>
           </div>
         </div>
-        <div className={`flex flex-grow text-sm w-full ${hideTop ? 'px-2 pb-2' : 'p-2'}`}>
-          <textarea
-            readOnly
-            ref={textarea}
-            autoCorrect="none"
-            value={logs || ''}
-            className="font-mono leading-6 break-all textarea custom-scrollbar p-3 w-full h-full outline-none"
-          />
+        <div className={`bg-core-black-100 flex flex-grow text-sm w-full ${hideTop ? 'px-2 pb-2' : 'p-2'}`}>
+          <div className="max-w-xl w-full mx-auto">
+            <textarea
+              readOnly
+              ref={textarea}
+              autoCorrect="none"
+              value={logs || ''}
+              className="bg-core-black-100 font-mono leading-6 break-all textarea custom-scrollbar p-3 lg:px-0 w-full h-full outline-none"
+            />
+          </div>
         </div>
       </div>
     </div>
