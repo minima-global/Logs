@@ -5,8 +5,8 @@ import { getLogs } from './lib';
 export const appContext = createContext<{
   logs: string | null;
   emptyLogs: boolean;
-  noLogs: boolean;
-}>({ logs: null, emptyLogs: true });
+  hasLogs: boolean;
+}>({ logs: null, emptyLogs: true, hasLogs: false });
 
 const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const loaded = useRef(false);
@@ -27,10 +27,14 @@ const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
               setEmptyLogs(true);
             }
 
-            setLogs(logs.map((i) => {
-              const decoded = decodeURIComponent(i.MESSAGE).replace("%27", "'");
-              return decoded.replace(/]\s:\s/, ']\n')
-            }).join('\n'));
+            setLogs(
+              logs
+                .map((i) => {
+                  const decoded = decodeURIComponent(i.MESSAGE).replace('%27', "'");
+                  return decoded.replace(/]\s:\s/, ']\n');
+                })
+                .join('\n')
+            );
           });
         }
       });

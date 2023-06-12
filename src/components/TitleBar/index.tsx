@@ -1,5 +1,4 @@
-import { FC, PropsWithChildren, useContext } from 'react';
-import { appContext } from '../../AppContext';
+import { FC, PropsWithChildren } from 'react';
 
 const TitleBar: FC<PropsWithChildren> = ({ children }) => {
   return (
