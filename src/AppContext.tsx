@@ -5,8 +5,7 @@ import { getLogs } from './lib';
 export const appContext = createContext<{
   logs: string | null;
   emptyLogs: boolean;
-  hasLogs: boolean;
-}>({ logs: null, emptyLogs: true, hasLogs: false });
+}>({ logs: null, emptyLogs: true });
 
 const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const loaded = useRef(false);
@@ -41,11 +40,8 @@ const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
     }
   }, [loaded]);
 
-  const hasLogs = logs !== '' || logs === null;
-
   const value = {
     logs,
-    hasLogs,
     emptyLogs,
   };
 

@@ -1,12 +1,12 @@
-import TitleBar from '../../components/TitleBar';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { appContext } from '../../AppContext';
 import Modal from '../../components/UI/Modal';
 import Button from '../../components/UI/Button';
 import { toHex } from '../../utilities/utilities';
+import TitleBar from '../../components/UI/TitleBar';
 
 function Home() {
-  const { logs, hasLogs } = useContext(appContext);
+  const { logs, emptyLogs } = useContext(appContext);
   const textarea = useRef<HTMLTextAreaElement | null>(null);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [hideTop, setHideTop] = useState(false);
@@ -96,7 +96,7 @@ function Home() {
                 fill="#F4F4F5"
               />
             </svg>
-            <p className="mb-12">This will download the logs as a text file.</p>
+            <p className="mb-12">This will download the logs as a text file</p>
             <Button variant="primary" onClick={exportLogs}>
               Download logs
             </Button>
@@ -105,10 +105,10 @@ function Home() {
       </Modal>
       <div className="h-screen flex flex-col flex-grow bg-core-black-contrast">
         <TitleBar>
-          {hasLogs && (
+          {!emptyLogs && (
             <div
               onClick={displayDownloadModal}
-              className="hidden lg:flex cursor-pointer items-center justify-end gap-3"
+              className="flex cursor-pointer items-center justify-end gap-3 -mt-1"
             >
               Download
               <svg
@@ -136,33 +136,7 @@ function Home() {
         >
           <div>
             <div className="grid grid-cols-12">
-              <div className="col-span-4">
-                <h1 className="text-2xl">Logs</h1>
-              </div>
-              <div className="col-span-8 flex items-center justify-end mb-0.5">
-                {hasLogs && (
-                  <div
-                    onClick={displayDownloadModal}
-                    className="flex lg:hidden cursor-pointer items-center justify-end gap-3"
-                  >
-                    Download
-                    <svg
-                      className="-mt-0.5"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 16 16"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M2.3077 16C1.80257 16 1.375 15.825 1.025 15.475C0.675 15.125 0.5 14.6974 0.5 14.1923V11.5H1.99997V14.1923C1.99997 14.2692 2.03202 14.3397 2.09612 14.4039C2.16024 14.468 2.23077 14.5 2.3077 14.5H13.6922C13.7692 14.5 13.8397 14.468 13.9038 14.4039C13.9679 14.3397 14 14.2692 14 14.1923V11.5H15.5V14.1923C15.5 14.6974 15.325 15.125 14.975 15.475C14.625 15.825 14.1974 16 13.6922 16H2.3077ZM7.99997 12.1154L3.7308 7.84619L4.78462 6.76162L7.25 9.22699V0.826965H8.74995V9.22699L11.2153 6.76162L12.2692 7.84619L7.99997 12.1154Z"
-                        fill="#F4F4F5"
-                      />
-                    </svg>
-                  </div>
-                )}
-              </div>
-              <div className="col-span-12 mt-3">
+              <div className="col-span-12">
                 <p className="text-core-grey-100 text-sm">Logs are a record of your node's activity and processes.</p>
               </div>
             </div>
