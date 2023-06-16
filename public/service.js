@@ -6,6 +6,10 @@ MDS.init(function (msg) {
   } else if (msg.event === 'MINIMALOG') {
     var encoded = encodeURIComponent(msg.data.message).replace(/'/g, "%27");
 
+    if (encoded.length >= 2032) {
+      encoded = encoded.slice(0, 2032) + '...';
+    }
+
     // insert logs into the logs table
     MDS.sql(`INSERT INTO logs (message,timestamp) VALUES ('${encoded}',CURRENT_TIMESTAMP)`, function (response) {
 
