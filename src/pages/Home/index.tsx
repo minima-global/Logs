@@ -221,7 +221,7 @@ function Home() {
           </div>
         </div>
         {loaded && (
-          <div className="lg:absolute bottom-0 right-0 controls flex justify-end px-3 pb-2">
+          <div className="lg:absolute bottom-0 right-0 controls flex justify-end p-3">
             <button disabled={scrollToTopDisabled} onClick={scrollToTop} className="disabled:opacity-40">
               <img alt="Up" src="./assets/arrow_up.svg" />
             </button>
