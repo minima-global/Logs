@@ -4,10 +4,13 @@ import Modal from '../../components/UI/Modal';
 import Button from '../../components/UI/Button';
 import { toHex } from '../../utilities/utilities';
 import TitleBar from '../../components/UI/TitleBar';
+import Line from '../../components/Line';
 
 function Home() {
-  const { logs, emptyLogs } = useContext(appContext);
-  const textarea = useRef<HTMLTextAreaElement | null>(null);
+  const { loaded, logs, emptyLogs, copied } = useContext(appContext);
+  const [scrollToTopDisabled, setScrollToTopDisabled] = useState(false);
+  const [scrollToBottomDisabled, setScrollToBottomDisabled] = useState(false);
+  const textarea = useRef<HTMLDivElement | null>(null);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [hideTop, setHideTop] = useState(false);
 
@@ -16,9 +19,28 @@ function Home() {
       const dateString = new Date().toISOString();
       const timeString = new Date().toTimeString();
       const date = dateString.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}/g)![0];
+      const month = date.split('-')[1];
+      const monthNames = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December',
+      ];
       const time = timeString.match(/[0-9]{2}:[0-9]{2}:[0-9]{2}/g)![0];
-      const fileName = `minima_${date.split('-').join('_')}_${time.split('-').join('_')}.txt`;
-      const blob = new Blob([logs]);
+      const actualMonth = monthNames[Number(month) - 1];
+
+      const fileName = `minima_logs_${date.split('-')[2]}${actualMonth}${date.split('-')[0]}_${time
+        .split(':')
+        .join('')}.txt`;
+      const blob = new Blob([logs.map(i => i.textContent).join('\n')]);
       const url = (window as any).URL.createObjectURL(blob, { type: 'plain/text' });
 
       if (window.navigator.userAgent.includes('Minima Browser')) {
@@ -42,12 +64,12 @@ function Home() {
   const displayDownloadModal = () => setShowDownloadModal(true);
   const hideDownloadModal = () => setShowDownloadModal(false);
 
-  // keeps textarea scrolled to bottom
-  useEffect(() => {
-    if (textarea && textarea.current) {
-      textarea.current!.scrollTop = textarea.current!.scrollHeight;
-    }
-  }, [logs, textarea]);
+  // // keeps textarea scrolled to bottom
+  // useEffect(() => {
+  //   if (textarea && textarea.current) {
+  //     textarea.current!.scrollTop = textarea.current!.scrollHeight;
+  //   }
+  // }, [logs, textarea]);
 
   // shows hide the top section if the user is not scrolled at the bottom of the textarea
   // offset: 200 pixels
@@ -70,6 +92,34 @@ function Home() {
       };
     }
   }, [logs, textarea]);
+
+  const scrollToTop = () => {
+    if (textarea.current) {
+      textarea.current!.scrollTop = 0;
+    }
+  };
+
+  const scrollToBottom = () => {
+    if (textarea.current) {
+      textarea.current!.scrollTop = textarea.current!.scrollHeight;
+    }
+  };
+
+  useEffect(() => {
+    if (loaded && textarea.current) {
+      const fn = () => {
+        const offset = textarea.current!.clientHeight;
+        setScrollToTopDisabled(textarea.current!.scrollTop < 10);
+        setScrollToBottomDisabled(textarea.current!.scrollHeight <= textarea.current!.scrollTop + offset);
+      };
+
+      textarea.current!.addEventListener('scroll', fn);
+
+      return () => {
+        textarea.current!.removeEventListener('scroll', fn);
+      };
+    }
+  }, [textarea, loaded]);
 
   return (
     <div className="app">
@@ -103,13 +153,10 @@ function Home() {
           </div>
         </div>
       </Modal>
-      <div className="h-screen flex flex-col flex-grow bg-core-black-contrast">
+      <div className="h-full flex flex-col flex-grow bg-core-black-contrast" style={{ maxHeight: '100vh' }}>
         <TitleBar>
-          {!emptyLogs && (
-            <div
-              onClick={displayDownloadModal}
-              className="flex cursor-pointer items-center justify-end gap-3 -mt-1"
-            >
+          {!emptyLogs && loaded && (
+            <div onClick={displayDownloadModal} className="flex cursor-pointer items-center justify-end gap-3 -mt-1">
               Download
               <svg
                 className="-mt-0.5"
@@ -142,17 +189,58 @@ function Home() {
             </div>
           </div>
         </div>
-        <div className={`bg-core-black-100 flex flex-grow text-sm w-full ${hideTop ? 'px-2 pb-2' : 'p-2'}`}>
+        <div
+          ref={textarea}
+          className={`bg-core-black-100 flex flex-grow text-sm w-full overflow-y-scroll custom-scrollbar ${
+            hideTop ? 'px-2 pb-2' : 'p-2'
+          }`}
+        >
           <div className="max-w-xl w-full mx-auto">
-            <textarea
-              readOnly
-              ref={textarea}
-              autoCorrect="none"
-              value={logs || ''}
-              className="bg-core-black-100 font-mono leading-6 break-all textarea custom-scrollbar p-3 lg:px-0 w-full h-full outline-none"
-            />
+            {!loaded && (
+              <div className="flex w-full h-full justify-center items-center">
+                <div className="text-center mb-12">
+                  <div role="status" className="inline-block mx-auto mb-3">
+                    <div className="spinner-border" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                  <div className="text-gray-400 relative">Loading, please wait</div>
+                </div>
+              </div>
+            )}
+            {loaded && logs && (
+              <div
+                className="p-3 lg:px-0 w-full outline-none overflow-hidden break-all"
+                onContextMenu={(evt) => evt.preventDefault()}
+              >
+                {logs.map((log) => (
+                  <Line id={log.id}>{log.textContent}</Line>
+                ))}
+              </div>
+            )}
           </div>
         </div>
+        {loaded && (
+          <div className="lg:absolute bottom-0 right-0 controls flex justify-end px-3 pb-2">
+            <button disabled={scrollToTopDisabled} onClick={scrollToTop} className="disabled:opacity-40">
+              <img alt="Up" src="./assets/arrow_up.svg" />
+            </button>
+            <button disabled={scrollToBottomDisabled} onClick={scrollToBottom} className="disabled:opacity-40">
+              <img alt="Down" src="./assets/arrow_down.svg" />
+            </button>
+          </div>
+        )}
+        {copied && (
+          <div className="bg-status-green text-black absolute mx-auto flex items-center gap-2 rounded rounded-full px-5 py-2 bottom-0 left-0 right-0 w-fit mb-4">
+            Copied
+            <svg className="-mr-1.5" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M8.6 14.6L15.65 7.55L14.25 6.15L8.6 11.8L5.75 8.95L4.35 10.35L8.6 14.6ZM10 20C8.61667 20 7.31667 19.7375 6.1 19.2125C4.88333 18.6875 3.825 17.975 2.925 17.075C2.025 16.175 1.3125 15.1167 0.7875 13.9C0.2625 12.6833 0 11.3833 0 10C0 8.61667 0.2625 7.31667 0.7875 6.1C1.3125 4.88333 2.025 3.825 2.925 2.925C3.825 2.025 4.88333 1.3125 6.1 0.7875C7.31667 0.2625 8.61667 0 10 0C11.3833 0 12.6833 0.2625 13.9 0.7875C15.1167 1.3125 16.175 2.025 17.075 2.925C17.975 3.825 18.6875 4.88333 19.2125 6.1C19.7375 7.31667 20 8.61667 20 10C20 11.3833 19.7375 12.6833 19.2125 13.9C18.6875 15.1167 17.975 16.175 17.075 17.075C16.175 17.975 15.1167 18.6875 13.9 19.2125C12.6833 19.7375 11.3833 20 10 20Z"
+                fill="#08090B"
+              />
+            </svg>
+          </div>
+        )}
       </div>
     </div>
   );
