@@ -231,7 +231,7 @@ function Home() {
           </div>
         )}
         {copied && (
-          <div className="bg-status-green text-black absolute mx-auto flex items-center gap-2 rounded rounded-full px-5 py-2 bottom-0 left-0 right-0 w-fit mb-4">
+          <div className="bg-status-green text-black absolute mx-auto flex items-center gap-2 rounded rounded-full px-5 py-2 bottom-0 left-0 right-0 w-fit mb-2">
             Copied
             <svg className="-mr-1.5" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
