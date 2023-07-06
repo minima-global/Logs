@@ -5,7 +5,12 @@ function Line({ id, children }) {
   const { copied, setCopied } = useContext(appContext);
 
   const setActive = () => {
-    navigator.clipboard.writeText(children);
+    const input = document.createElement('textarea');
+    input.textContent = children;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy');
+    document.body.removeChild(input);
     setCopied(id);
   };
 

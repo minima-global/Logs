@@ -7,12 +7,23 @@ export const appContext = createContext<{
   emptyLogs: boolean;
   copied: number | null;
   setCopied: React.Dispatch<React.SetStateAction<number | null>>;
+  hasScrolledToBottom: boolean;
+  setHasScrolledToBottom: React.Dispatch<React.SetStateAction<boolean>>;
   loaded: boolean;
-}>({ logs: null, emptyLogs: true, loaded: false, copied: null, setCopied: () => null });
+}>({
+  logs: null,
+  emptyLogs: true,
+  loaded: false,
+  copied: null,
+  setCopied: () => null,
+  hasScrolledToBottom: false,
+  setHasScrolledToBottom: () => null,
+});
 
 const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const loaded = useRef(false);
   const [copied, setCopied] = useState<number | null>(null);
+  const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
   const [logs, setLogs] = useState<{ id: number; textContent: string }[] | null>(null);
   const [emptyLogs, setEmptyLogs] = useState<boolean>(true);
 
@@ -60,6 +71,8 @@ const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
     emptyLogs,
     copied,
     setCopied,
+    hasScrolledToBottom,
+    setHasScrolledToBottom,
     loaded: loaded.current,
   };
 

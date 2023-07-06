@@ -7,7 +7,7 @@ import TitleBar from '../../components/UI/TitleBar';
 import Line from '../../components/Line';
 
 function Home() {
-  const { loaded, logs, emptyLogs, copied } = useContext(appContext);
+  const { loaded, logs, emptyLogs, copied, hasScrolledToBottom, setHasScrolledToBottom } = useContext(appContext);
   const [scrollToTopDisabled, setScrollToTopDisabled] = useState(false);
   const [scrollToBottomDisabled, setScrollToBottomDisabled] = useState(false);
   const textarea = useRef<HTMLDivElement | null>(null);
@@ -36,16 +36,18 @@ function Home() {
       ];
       const time = timeString.match(/[0-9]{2}:[0-9]{2}:[0-9]{2}/g)![0];
       const actualMonth = monthNames[Number(month) - 1];
+      const content = logs.map((i) => i.textContent).join('\n');
 
       const fileName = `minima_logs_${date.split('-')[2]}${actualMonth}${date.split('-')[0]}_${time
         .split(':')
         .join('')}.txt`;
-      const blob = new Blob([logs.map(i => i.textContent).join('\n')]);
+      const blob = new Blob([content]);
       const url = (window as any).URL.createObjectURL(blob, { type: 'plain/text' });
 
       if (window.navigator.userAgent.includes('Minima Browser')) {
         // @ts-ignore
-        return Android.blobDownload(fileName.replace(/:/g, '_'), toHex(logs));
+        Android.blobDownload(fileName, toHex(content));
+        return setShowDownloadModal(false);
       }
 
       setShowDownloadModal(false);
@@ -64,12 +66,13 @@ function Home() {
   const displayDownloadModal = () => setShowDownloadModal(true);
   const hideDownloadModal = () => setShowDownloadModal(false);
 
-  // // keeps textarea scrolled to bottom
-  // useEffect(() => {
-  //   if (textarea && textarea.current) {
-  //     textarea.current!.scrollTop = textarea.current!.scrollHeight;
-  //   }
-  // }, [logs, textarea]);
+  // scrolls the text to bottom on first load
+  useEffect(() => {
+    if (loaded && !hasScrolledToBottom) {
+      textarea.current!.scrollTop = textarea.current!.scrollHeight;
+      setHasScrolledToBottom(true);
+    }
+  }, [logs, hasScrolledToBottom]);
 
   // shows hide the top section if the user is not scrolled at the bottom of the textarea
   // offset: 200 pixels
@@ -233,7 +236,14 @@ function Home() {
         {copied && (
           <div className="bg-status-green text-black absolute mx-auto flex items-center gap-2 rounded rounded-full px-5 py-2 bottom-0 left-0 right-0 w-fit mb-2">
             Copied
-            <svg className="-mr-1.5" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg
+              className="-mr-1.5"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <path
                 d="M8.6 14.6L15.65 7.55L14.25 6.15L8.6 11.8L5.75 8.95L4.35 10.35L8.6 14.6ZM10 20C8.61667 20 7.31667 19.7375 6.1 19.2125C4.88333 18.6875 3.825 17.975 2.925 17.075C2.025 16.175 1.3125 15.1167 0.7875 13.9C0.2625 12.6833 0 11.3833 0 10C0 8.61667 0.2625 7.31667 0.7875 6.1C1.3125 4.88333 2.025 3.825 2.925 2.925C3.825 2.025 4.88333 1.3125 6.1 0.7875C7.31667 0.2625 8.61667 0 10 0C11.3833 0 12.6833 0.2625 13.9 0.7875C15.1167 1.3125 16.175 2.025 17.075 2.925C17.975 3.825 18.6875 4.88333 19.2125 6.1C19.7375 7.31667 20 8.61667 20 10C20 11.3833 19.7375 12.6833 19.2125 13.9C18.6875 15.1167 17.975 16.175 17.075 17.075C16.175 17.975 15.1167 18.6875 13.9 19.2125C12.6833 19.7375 11.3833 20 10 20Z"
                 fill="#08090B"
