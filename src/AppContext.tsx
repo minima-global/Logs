@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { createContext, useEffect, useRef, useState } from 'react';
-import { getLogs } from './lib';
+import { get, getLogs } from './lib';
 
 export const appContext = createContext<{
   logs: { id: number; textContent: string }[] | null;
@@ -13,7 +13,7 @@ export const appContext = createContext<{
   shouldScrollToBottom: boolean;
   setShouldScrollToBottom: React.Dispatch<React.SetStateAction<boolean>>;
   displaySize: string | null;
-  setDisplaySize: React.Dispatch<React.SetStateAction<string>>;
+  setDisplaySize: React.Dispatch<React.SetStateAction<null | string>>;
 }>({
   logs: null,
   emptyLogs: true,
@@ -43,6 +43,20 @@ const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
       loaded.current = true;
 
       (window as any).MDS.init((evt: any) => {
+        if (evt.event === 'inited') {
+          get('DISPLAY_SIZE').then((response) => {
+            if (response !== '0') {
+              setDisplaySize(response as string);
+            }
+          });
+
+          get('SCROLL_TO_BOTTOM').then((response) => {
+            if (response !== '0') {
+              setShouldScrollToBottom(true);
+            }
+          });
+        }
+
         if (evt.event === 'inited' || evt.event === 'MINIMALOG') {
           getLogs().then((logs) => {
             if (logs.length > 0) {
