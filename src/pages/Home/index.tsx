@@ -5,14 +5,17 @@ import Button from '../../components/UI/Button';
 import { toHex } from '../../utilities/utilities';
 import TitleBar from '../../components/UI/TitleBar';
 import Line from '../../components/Line';
+import Settings from '../../components/Settings';
 
 function Home() {
-  const { loaded, logs, emptyLogs, copied, hasScrolledToBottom, setHasScrolledToBottom } = useContext(appContext);
+  const { loaded, displaySize, logs, emptyLogs, shouldScrollToBottom, copied, hasScrolledToBottom, setHasScrolledToBottom } =
+    useContext(appContext);
   const [scrollToTopDisabled, setScrollToTopDisabled] = useState(false);
   const [scrollToBottomDisabled, setScrollToBottomDisabled] = useState(false);
   const textarea = useRef<HTMLDivElement | null>(null);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [hideTop, setHideTop] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   const exportLogs = () => {
     if (logs) {
@@ -74,6 +77,13 @@ function Home() {
     }
   }, [logs, hasScrolledToBottom]);
 
+  // scrolls the text to bottom if setting was toggled
+  useEffect(() => {
+    if (loaded && shouldScrollToBottom) {
+      textarea.current!.scrollTop = textarea.current!.scrollHeight;
+    }
+  }, [logs, loaded, shouldScrollToBottom]);
+
   // shows hide the top section if the user is not scrolled at the bottom of the textarea
   // offset: 200 pixels
   useEffect(() => {
@@ -126,6 +136,7 @@ function Home() {
 
   return (
     <div className="app">
+      <Settings display={showSettings} close={() => setShowSettings(false)} />
       <Modal
         display={showDownloadModal}
         frosted
@@ -194,7 +205,7 @@ function Home() {
         </div>
         <div
           ref={textarea}
-          className={`bg-core-black-100 flex flex-grow text-sm w-full overflow-y-scroll custom-scrollbar ${
+          className={`bg-core-black-100 flex flex-grow tracking-wider ${displaySize === 'sm' && 'text-sm'} ${displaySize === 'xs' && 'text-xs'} ${displaySize === 'lg' && 'text-lg'} w-full overflow-y-scroll custom-scrollbar ${
             hideTop ? 'px-2 pb-2' : 'p-2'
           }`}
         >
@@ -217,12 +228,19 @@ function Home() {
                 onContextMenu={(evt) => evt.preventDefault()}
               >
                 {logs.map((log) => (
-                  <Line id={log.id}>{log.textContent}</Line>
+                  <Line id={log.id} key={log.id}>{log.textContent}</Line>
                 ))}
               </div>
             )}
           </div>
         </div>
+        {loaded && (
+          <div className="absolute bottom-1 left-1 controls flex justify-end p-3">
+            <button onClick={() => setShowSettings(true)} className="disabled:opacity-40">
+              <img alt="Settings" src="./assets/settings.svg" />
+            </button>
+          </div>
+        )}
         {loaded && (
           <div className="lg:absolute bottom-0 right-0 controls flex justify-end p-3">
             <button disabled={scrollToTopDisabled} onClick={scrollToTop} className="disabled:opacity-40">
@@ -234,7 +252,7 @@ function Home() {
           </div>
         )}
         {copied && (
-          <div className="bg-status-green text-black absolute mx-auto flex items-center gap-2 rounded rounded-full px-5 py-2 bottom-0 left-0 right-0 w-fit mb-2">
+          <div className="bg-status-green text-black absolute mx-auto flex items-center gap-2 rounded rounded-full px-5 py-2 bottom-0 left-0 right-0 w-fit mb-2 lg:mb-4">
             Copied
             <svg
               className="-mr-1.5"

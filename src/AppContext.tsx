@@ -10,6 +10,10 @@ export const appContext = createContext<{
   hasScrolledToBottom: boolean;
   setHasScrolledToBottom: React.Dispatch<React.SetStateAction<boolean>>;
   loaded: boolean;
+  shouldScrollToBottom: boolean;
+  setShouldScrollToBottom: React.Dispatch<React.SetStateAction<boolean>>;
+  displaySize: string | null;
+  setDisplaySize: React.Dispatch<React.SetStateAction<string>>;
 }>({
   logs: null,
   emptyLogs: true,
@@ -18,6 +22,10 @@ export const appContext = createContext<{
   setCopied: () => null,
   hasScrolledToBottom: false,
   setHasScrolledToBottom: () => null,
+  shouldScrollToBottom: false,
+  setShouldScrollToBottom: () => null,
+  displaySize: null,
+  setDisplaySize: () => null,
 });
 
 const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
@@ -26,6 +34,8 @@ const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
   const [logs, setLogs] = useState<{ id: number; textContent: string }[] | null>(null);
   const [emptyLogs, setEmptyLogs] = useState<boolean>(true);
+  const [shouldScrollToBottom, setShouldScrollToBottom] = useState(false);
+  const [displaySize, setDisplaySize] = useState<string | null>(null);
 
   // init mds
   useEffect(() => {
@@ -74,6 +84,10 @@ const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
     hasScrolledToBottom,
     setHasScrolledToBottom,
     loaded: loaded.current,
+    shouldScrollToBottom,
+    setShouldScrollToBottom,
+    displaySize,
+    setDisplaySize,
   };
 
   return <appContext.Provider value={value}>{children}</appContext.Provider>;
