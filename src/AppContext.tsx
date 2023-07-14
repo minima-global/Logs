@@ -66,10 +66,21 @@ const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
             }
 
             setLogs(
-              logs.map((i) => {
-                const decoded = decodeURIComponent(i.MESSAGE).replace('%27', "'");
-                return { textContent: decoded, id: i.ID };
-              })
+              logs
+                .map((i) => {
+                  try {
+                    const decoded = decodeURIComponent(i.MESSAGE).replace('%27', "'");
+                    return { textContent: decoded, id: i.ID };
+                  } catch {
+                    try {
+                      const decoded = decodeURIComponent(i.MESSAGE.replace(/%...$/, '...')).replace('%27', "'");
+                      return { textContent: decoded, id: i.ID };
+                    } catch {
+                      return false;
+                    }
+                  }
+                })
+                .filter(Boolean) as { id: number; textContent: string }[]
             );
           });
         }
