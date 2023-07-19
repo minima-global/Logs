@@ -25,7 +25,7 @@ export function set(key: string, value: string) {
 }
 
 export function get(key: string) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     (window as any).MDS.keypair.get(key, function (response: any) {
       if (response.status) {
         return resolve(response.value);
