@@ -31,7 +31,7 @@ export function get(key: string) {
         return resolve(response.value);
       }
 
-      return reject();
+      return resolve('0');
     });
   });
 }
