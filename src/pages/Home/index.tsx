@@ -205,11 +205,11 @@ function Home() {
         </div>
         <div
           ref={textarea}
-          className={`bg-core-black-100 flex flex-grow tracking-wider ${displaySize === 'sm' && 'text-sm'} ${displaySize === 'xs' && 'text-xs'} ${displaySize === 'lg' && 'text-lg'} w-full overflow-y-scroll custom-scrollbar ${
+          className={`bg-core-black-100 flex flex-grow ${displaySize === 'sm' && 'text-sm'} ${displaySize === 'xs' && 'text-xs'} ${displaySize === 'lg' && 'text-lg'} w-full overflow-y-scroll custom-scrollbar ${
             hideTop ? 'px-2 pb-2' : 'p-2'
           }`}
         >
-          <div className="max-w-xl w-full mx-auto">
+          <div className="max-w-xl lg:max-w-full w-full mx-auto">
             {!loaded && (
               <div className="flex w-full h-full justify-center items-center">
                 <div className="text-center mb-12">
@@ -242,7 +242,7 @@ function Home() {
           </div>
         )}
         {loaded && (
-          <div className="lg:absolute bottom-0 right-0 controls flex justify-end p-3">
+          <div className="bottom-0 right-0 controls flex justify-end p-3">
             <button disabled={scrollToTopDisabled} onClick={scrollToTop} className="disabled:opacity-40">
               <img alt="Up" src="./assets/arrow_up.svg" />
             </button>
