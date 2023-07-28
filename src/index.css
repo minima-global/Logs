@@ -8,6 +8,12 @@
     -webkit-user-select: none;
 }
 
+@media (min-width: 768px) {
+    * {
+        -webkit-user-select: initial;
+    }
+}
+
 :root {
     --title-bar-color: #000;
 

@@ -206,7 +206,7 @@ function Home() {
         <div
           ref={textarea}
           className={`bg-core-black-100 flex flex-grow ${displaySize === 'sm' && 'text-sm'} ${displaySize === 'xs' && 'text-xs'} ${displaySize === 'lg' && 'text-lg'} w-full overflow-y-scroll custom-scrollbar ${
-            hideTop ? 'px-2 pb-2' : 'p-2'
+            hideTop ? 'px-2 pb-2' : 'p-2 lg:py-2 lg:px-5'
           }`}
         >
           <div className="max-w-xl lg:max-w-full w-full mx-auto">
