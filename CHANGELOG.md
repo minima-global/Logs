@@ -1,5 +1,9 @@
 # Changelog
 
+##### [1.0.2] - 12 September 23
+
+- Added ability to copy text on desktop without using the mobile UI
+
 ##### [1.0.0] - 31 July 23
 
 - Added ability to copy text on desktop without using the mobile UI
