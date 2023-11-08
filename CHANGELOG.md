@@ -1,5 +1,9 @@
 # Changelog
 
+##### [1.0.3] - 08 November 23
+
+- Add category (Utilities)
+
 ##### [1.0.2] - 12 September 23
 
 - Added ability to copy text on desktop without using the mobile UI
