@@ -1,5 +1,9 @@
 # Changelog
 
+##### [1.0.4] - 17 January 25
+
+- Logs are now purged once every hour instead of after every log entry
+
 ##### [1.0.3] - 08 November 23
 
 - Add category (Utilities)
